@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 HttpClient httpClient = new HttpClient();
 Client client = new Client()
@@ -13,15 +14,12 @@ Client client = new Client()
     Phone = "67-637-87"
 };
 
-SendClient(client);
-
-//Task<List<Client>> task = getClient();
-//List<Client> clients = task.Result;
-//foreach(Client c in clients)
-//{
-//    Console.WriteLine(c.Firstname+" "+c.Lastname);
-//}
-
+Task<List<Client>> task = getClient();
+List<Client> clients = task.Result;
+foreach (Client c in clients)
+{
+    Console.WriteLine(c.Firstname + " " + c.Lastname);
+}
 
 async Task<List<Client>> getClient()
 {
@@ -32,7 +30,6 @@ async Task<List<Client>> getClient()
     request.Content = content;
     using HttpResponseMessage response = await httpClient.SendAsync(request);
     string responseText = await response.Content.ReadAsStringAsync();
-    Console.WriteLine(content);
     List<Client> clients = JsonSerializer.Deserialize<List<Client>>(responseText)!;
     return clients;
 }
@@ -49,10 +46,18 @@ async void SendClient(Client client)
 
 class Client
 {
+    [JsonIgnore]
+    public int Clientid { get; set; }
+    [JsonPropertyName("firstname")]
     public string Firstname { get; set; } = null!;
+    [JsonPropertyName("surname")]
     public string? Surname { get; set; }
+    [JsonPropertyName("lastname")]
     public string Lastname { get; set; } = null!;
+    [JsonPropertyName("compane")]
     public string Compane { get; set; } = null!;
+    [JsonPropertyName("phone")]
     public string Phone { get; set; } = null!;
+    [JsonPropertyName("city")]
     public string City { get; set; } = null!;
 }
